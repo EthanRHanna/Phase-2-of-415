@@ -1,23 +1,34 @@
-const uri =
-  "mongodb+srv://User:HPIx5GGvfwzjgGNF@cluster0.cllmezs.mongodb.net/?retryWrites=true&w=majority";
-use("Project_415");
-
 const express = require("express");
+const { MongoClient } = require("mongodb");
 const bodyParser = require("body-parser");
 const app = express();
 const port = 3000;
 var fs = require("fs");
 app.listen(port);
-console.log("Server started at http://localhost:" + port);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// GET All
+const uri =
+  "mongodb+srv://User:HPIx5GGvfwzjgGNF@cluster0.cllmezs.mongodb.net/?retryWrites=true&w=majority";
+
+const client = new MongoClient(uri);
+
+// GET All tickets
 app.get("/rest/list/", function (req, res) {
-  db.getCollection("SampleForProject");
+  async function run() {
+    try {
+      let collection = await db.collection("SampleForProject");
+      let results = await collection.find({}).limit(50).toArray();
+
+      res.send(results).status(200);
+    } catch (error) {
+      res.status(404).send("Nothing");
+    }
+  }
 });
 
 // GET ticket by id
+
 app.get("/rest/ticket/:id", function (req, res) {
   //JSON.parse treats id as a number thus we have to treat it as a number in input
   const inputId = Number(req.params.id);
