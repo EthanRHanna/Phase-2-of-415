@@ -1,7 +1,3 @@
-// The uri string must be the connection string for the database (obtained on Atlas).
-const uri =
-  "mongodb+srv://User:HPIx5GGvfwzjgGNF@cluster0.cllmezs.mongodb.net/?retryWrites=true&w=majority";
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
@@ -15,35 +11,15 @@ console.log("Server started at http://localhost:" + port);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// GET All tickets
+// GET All
+app.get("/rest/list/", async (req, res) => {
+  let collection = await db.collection("posts");
+  let results = await collection.find({}).toArray();
 
-app.get("/rest/list/", function (req, res) {
-  fs.readFile("tickets.txt", (err, data) => {
-    if (err) {
-      if (err.code === "ENOENT") {
-        //Error No Entry
-        //if file doesn't exist we throw an error
-        res.status(404).send("File with Tickets does not exist!");
-      } else {
-        console.error(err);
-        res.status(500).send("Server error!");
-      }
-      return;
-    } else {
-      console.log("GET all tickets was successful!\n");
-    }
-
-    router.get("/", async (req, res) => {
-      let collection = await db.collection("SampleForProject");
-      let results = await collection.find({}).toArray();
-
-      res.send(results).status(200);
-    });
-  });
+  res.send(results).status(200);
 });
 
 // GET ticket by id
-
 app.get("/rest/ticket/:id", function (req, res) {
   //JSON.parse treats id as a number thus we have to treat it as a number in input
   const inputId = Number(req.params.id);
