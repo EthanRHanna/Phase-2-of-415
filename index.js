@@ -1,5 +1,6 @@
 const uri =
   "mongodb+srv://User:HPIx5GGvfwzjgGNF@cluster0.cllmezs.mongodb.net/?retryWrites=true&w=majority";
+use("Project_415");
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -8,24 +9,12 @@ const port = 3000;
 var fs = require("fs");
 app.listen(port);
 console.log("Server started at http://localhost:" + port);
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // GET All
 app.get("/rest/list/", function (req, res) {
-  const client = new MongoClient(uri);
-
-  async function run() {
-    try {
-      let collection = await db.collection("SampleForProject");
-      let results = await collection.find({}).toArray();
-
-      res.send(results).status(200);
-    } catch (err) {
-      return res.status(400).send("Can not connect");
-    }
-  }
+  db.getCollection("SampleForProject");
 });
 
 // GET ticket by id
