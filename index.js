@@ -14,6 +14,8 @@ const uri =
 
 const client = new MongoClient(uri);
 
+var updateId = -1;
+
 app.get("/form", function (req, res) {
   res.setHeader("Content-Type", "text/html");
   fs.readFile("./formFile.html", "utf8", (err, contents) => {
@@ -67,7 +69,7 @@ app.get("/rest/ticket/:id", function (req, res) {
 //A Delete request
 app.delete("/rest/delticket/:id", function (req, res) {
   async function run() {
-    const query = { _id: ObjectId(req.params.id) };
+    const query = { _id: parseInt(req.params.id) };
 
     let collection = await client.db("cluster0").collection("SampleForProject");
 
@@ -126,6 +128,8 @@ app.post("/rest/ticket/", function (req, res) {
 });
 
 app.get("/updateForm/:id", function (req, res) {
+  updateId = req.params.id;
+
   res.setHeader("Content-Type", "text/html");
   fs.readFile("./formFileUpdate.html", "utf8", (err, contents) => {
     if (err) {
@@ -154,7 +158,7 @@ app.get("/updateForm/:id", function (req, res) {
 //Update request
 app.patch("/rest/update/:id"),
   function (req, res) {
-    const inputId = Number(req.params.id);
+    const inputId = updateId;
     console.log("Looking for: " + inputId);
 
     const updatedTicket = req.body;
