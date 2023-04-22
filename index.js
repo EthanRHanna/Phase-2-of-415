@@ -14,6 +14,20 @@ const uri =
 
 const client = new MongoClient(uri);
 
+app.get("/form", function (req, res) {
+  res.setHeader("Content-Type", "text/html");
+  fs.readFile("./formFile.html", "utf8", (err, contents) => {
+    if (err) {
+      console.log("Form file Read Error", err);
+      res.write("<p>Form file Read Error</p>");
+    } else {
+      console.log("Form loaded\n");
+      res.write(contents + "<br>");
+    }
+    res.end();
+  });
+});
+
 // GET All tickets
 app.get("/rest/list/", function (req, res) {
   async function run() {
@@ -112,13 +126,44 @@ app.post("/rest/ticket/", function (req, res) {
   run().catch(console.log(error));
 });
 
+app.get("/updateForm/:id", function (req, res) {
+  res.setHeader("Content-Type", "text/html");
+  fs.readFile("./formFileUpdate.html", "utf8", (err, contents) => {
+    if (err) {
+      console.log("Form file Read Error", err);
+      res.write("<p>Form file Read Error</p>");
+    } else {
+      async function run() {
+        let collection = await client
+          .db("cluster0")
+          .collection("SampleForProject");
+        let query = { _id: parseInt(inputId) };
+        let result = await collection.findOne(query);
+
+        if (!result) res.send("Ticket Not found").status(404);
+        else res.send(result).status(200);
+      }
+
+      run().catch(console.log(error));
+
+      console.log("Form loaded\n");
+      res.write(contents + "<br>");
+    }
+  });
+});
+
 //Update request
-app.patch("/rest/upticket/:id"),
+app.patch("/rest/update/:id"),
   function (req, res) {
+    const inputId = Number(req.params.id);
+    console.log("Looking for: " + inputId);
+
+    const updatedTicket = req.body;
+
     async function run() {
-      const query = { _id: parseInt(req.params.id) };
+      const query = { _id: parseInt(inputId) };
       const updates = {
-        $push: { ticketUpdates: req.body },
+        $push: { updatedTicket },
       };
 
       let collection = await client
@@ -131,3 +176,5 @@ app.patch("/rest/upticket/:id"),
 
     run().catch(console.log(error));
   };
+
+app.patch("/rest/upticket/"), function (req, res) {};
