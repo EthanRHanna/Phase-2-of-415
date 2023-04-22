@@ -15,16 +15,20 @@ const client = new MongoClient(uri);
 
 // GET All tickets
 app.get("/rest/list/", function (req, res) {
-  router.get(async (Dreq, Dres) => {
+  async function run() {
     try {
-      let collection = await db.collection("SampleForProject");
+      let collection = await client
+        .db("cluster0")
+        .collection("SampleForProject");
       let results = await collection.find({}).limit(50).toArray();
 
       res.send(results).status(200);
     } catch (error) {
       res.status(404).send("Nothing");
     }
-  });
+  }
+
+  run.call;
 });
 
 // GET ticket by id
@@ -34,8 +38,8 @@ app.get("/rest/ticket/:id", function (req, res) {
   console.log("Looking for: " + inputId);
 
   router.get(async (Dreq, Dres) => {
-    let collection = await db.collection("SampleForProject");
-    let query = { _id: ObjectId(req.params.id) };
+    let collection = await client.db("cluster0").collection("SampleForProject");
+    let query = { _id: parseInt(req.params.id) };
     let result = await collection.findOne(query);
 
     if (!result) res.send("Not found").status(404);
@@ -48,15 +52,14 @@ app.delete("/rest/delticket/:id", function (req, res) {
   router.delete(async (Dreq, Dres) => {
     const query = { _id: ObjectId(req.params.id) };
 
-    const collection = db.collection("SampleForProject");
+    let collection = await client.db("cluster0").collection("SampleForProject");
 
     if (!(await collection.findOne(query))) {
       res.send(result).status(200);
     } else {
       let result = await collection.deleteOne(query);
+      res.send(result).status(200);
     }
-
-    res.send(result).status(200);
   });
 });
 
@@ -94,7 +97,7 @@ app.post("/rest/ticket/", function (req, res) {
 
   //Adding new entry into database
   router.post(async (Dreq, Dres) => {
-    let collection = await db.collection("SampleForProject");
+    let collection = await client.db("cluster0").collection("SampleForProject");
     let newDocument = newTicket;
     newDocument.date = new Date();
     let result = await collection.insertOne(newDocument);
@@ -106,12 +109,14 @@ app.post("/rest/ticket/", function (req, res) {
 app.update("/rest/upticket/ticketUpdates/:id"),
   function (req, res) {
     router.patch(async (Dreq, Dres) => {
-      const query = { _id: ObjectId(req.params.id) };
+      const query = { _id: parseInt(req.params.id) };
       const updates = {
         $push: { ticketUpdates: req.body },
       };
 
-      let collection = await db.collection("posts");
+      let collection = await client
+        .db("cluster0")
+        .collection("SampleForProject");
       let result = await collection.updateOne(query, updates);
 
       res.send(result).status(200);
