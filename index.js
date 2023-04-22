@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const port = 3000;
 var fs = require("fs");
+const { error } = require("console");
 app.listen(port);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,7 +29,7 @@ app.get("/rest/list/", function (req, res) {
     }
   }
 
-  run.call;
+  run().catch(console.log(error));
 });
 
 // GET ticket by id
@@ -37,14 +38,16 @@ app.get("/rest/ticket/:id", function (req, res) {
   const inputId = Number(req.params.id);
   console.log("Looking for: " + inputId);
 
-  router.get(async (Dreq, Dres) => {
+  async function run() {
     let collection = await client.db("cluster0").collection("SampleForProject");
     let query = { _id: parseInt(req.params.id) };
     let result = await collection.findOne(query);
 
     if (!result) res.send("Not found").status(404);
     else res.send(result).status(200);
-  });
+  }
+
+  run().catch(console.log(error));
 });
 
 //A Delete request
