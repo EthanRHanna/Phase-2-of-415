@@ -100,7 +100,6 @@ app.post("/rest/ticket/", function (req, res) {
     "submitter",
     "assignee_id",
     "follower_ids",
-    "tags",
   ];
   //checking how many fields are missing
   const missingTicketInfo = ticketInfo.filter((field) => !(field in newTicket));
