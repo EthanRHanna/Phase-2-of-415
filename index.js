@@ -28,44 +28,39 @@ app.get("/rest/list/", function (req, res) {
 });
 
 // GET ticket by id
-
 app.get("/rest/ticket/:id", function (req, res) {
   //JSON.parse treats id as a number thus we have to treat it as a number in input
   const inputId = Number(req.params.id);
   console.log("Looking for: " + inputId);
 
-  fs.readFile("tickets.txt", (err, data) => {
-    if (err) {
-      if (err.code === "ENOENT") {
-        //ENOENT = Error No Entry
-        //if file doesn't exist we throw an error
-        res.status(404).send("File with Tickets does not exist!");
-      } else {
-        console.error(err);
-        res.status(500).send("Server error!");
-      }
-      return;
+  router.get(async (req, res) => {
+    let collection = await db.collection("SampleForProject");
+    let query = { _id: ObjectId(req.params.id) };
+    let result = await collection.findOne(query);
+
+    if (!result) res.send("Not found").status(404);
+    else res.send(result).status(200);
+  });
+});
+
+//A Delete request
+app.delete("/rest/delticket/:id", function (req, res) {
+  router.delete(async (req, res) => {
+    const query = { _id: ObjectId(req.params.id) };
+
+    const collection = db.collection("SampleForProject");
+
+    if (!(await collection.findOne(query))) {
+      res.send(result).status(200);
     } else {
-      console.log("GET all tickets was successful!\n");
+      let result = await collection.deleteOne(query);
     }
 
-    const tickets = JSON.parse(data.toString("utf8"));
-    //we search for ticket who's id matches the inputId
-    const ticket = tickets.find((ticket) => ticket.id === inputId);
-
-    //if ticket is not found it will be undefined
-    if (!ticket) {
-      res.status(404).send("Ticket does not exist!");
-    } else {
-      console.log("Ticket exists!");
-      //sending response - ticket
-      res.json(ticket);
-    }
+    res.send(result).status(200);
   });
 });
 
 // A POST request
-
 app.post("/rest/ticket/", function (req, res) {
   const newTicket = req.body;
 
@@ -97,38 +92,28 @@ app.post("/rest/ticket/", function (req, res) {
     });
   }
 
-  //adding the new ticket
-  fs.readFile("tickets.txt", (err, data) => {
-    if (err) {
-      if (err.code === "ENOENT") {
-        //Error No Entry
-        //if file doesn't exist we throw an error
-        res.status(404).send("File with Tickets does not exist!");
-      } else {
-        console.error(err);
-        res.status(500).send("Server error!");
-      }
-      return;
-    } else {
-      console.log("GET all tickets was successful!\n");
-    }
-
-    //creating javascript object - array tickets
-    const tickets = JSON.parse(data.toString("utf8"));
-
-    //Adding the new ticket to the array
-    tickets.push(newTicket);
-
-    //Saving the ticket in the file
-    fs.writeFile("tickets.txt", JSON.stringify(tickets, null, 2), (err) => {
-      if (err) {
-        return res.status(500).json({
-          error: "Error writing to file!",
-        });
-      } else {
-        console.log("Ticket added!");
-        res.status(201).json(newTicket);
-      }
-    });
+  //Adding new entry into database
+  router.post(async (req, res) => {
+    let collection = await db.collection("SampleForProject");
+    let newDocument = newTicket;
+    newDocument.date = new Date();
+    let result = await collection.insertOne(newDocument);
+    res.send(result).status(204);
   });
 });
+
+//Update request
+app.update("/rest/upticket/ticketUpdates/:id"),
+  function (req, res) {
+    router.patch(async (req, res) => {
+      const query = { _id: ObjectId(req.params.id) };
+      const updates = {
+        $push: { ticketUpdates: req.body },
+      };
+
+      let collection = await db.collection("posts");
+      let result = await collection.updateOne(query, updates);
+
+      res.send(result).status(200);
+    });
+  };
