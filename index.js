@@ -15,7 +15,7 @@ const client = new MongoClient(uri);
 
 // GET All tickets
 app.get("/rest/list/", function (req, res) {
-  async function run() {
+  router.get(async (Dreq, Dres) => {
     try {
       let collection = await db.collection("SampleForProject");
       let results = await collection.find({}).limit(50).toArray();
@@ -24,7 +24,7 @@ app.get("/rest/list/", function (req, res) {
     } catch (error) {
       res.status(404).send("Nothing");
     }
-  }
+  });
 });
 
 // GET ticket by id
@@ -33,7 +33,7 @@ app.get("/rest/ticket/:id", function (req, res) {
   const inputId = Number(req.params.id);
   console.log("Looking for: " + inputId);
 
-  router.get(async (req, res) => {
+  router.get(async (Dreq, Dres) => {
     let collection = await db.collection("SampleForProject");
     let query = { _id: ObjectId(req.params.id) };
     let result = await collection.findOne(query);
@@ -45,7 +45,7 @@ app.get("/rest/ticket/:id", function (req, res) {
 
 //A Delete request
 app.delete("/rest/delticket/:id", function (req, res) {
-  router.delete(async (req, res) => {
+  router.delete(async (Dreq, Dres) => {
     const query = { _id: ObjectId(req.params.id) };
 
     const collection = db.collection("SampleForProject");
@@ -93,7 +93,7 @@ app.post("/rest/ticket/", function (req, res) {
   }
 
   //Adding new entry into database
-  router.post(async (req, res) => {
+  router.post(async (Dreq, Dres) => {
     let collection = await db.collection("SampleForProject");
     let newDocument = newTicket;
     newDocument.date = new Date();
@@ -105,7 +105,7 @@ app.post("/rest/ticket/", function (req, res) {
 //Update request
 app.update("/rest/upticket/ticketUpdates/:id"),
   function (req, res) {
-    router.patch(async (req, res) => {
+    router.patch(async (Dreq, Dres) => {
       const query = { _id: ObjectId(req.params.id) };
       const updates = {
         $push: { ticketUpdates: req.body },
