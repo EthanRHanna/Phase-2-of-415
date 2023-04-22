@@ -43,7 +43,7 @@ app.get("/rest/ticket/:id", function (req, res) {
     let query = { _id: parseInt(req.params.id) };
     let result = await collection.findOne(query);
 
-    if (!result) res.send("Not found").status(404);
+    if (!result) res.send("Ticket Not found").status(404);
     else res.send(result).status(200);
   }
 
@@ -52,7 +52,7 @@ app.get("/rest/ticket/:id", function (req, res) {
 
 //A Delete request
 app.delete("/rest/delticket/:id", function (req, res) {
-  router.delete(async (Dreq, Dres) => {
+  async function run() {
     const query = { _id: ObjectId(req.params.id) };
 
     let collection = await client.db("cluster0").collection("SampleForProject");
@@ -63,7 +63,9 @@ app.delete("/rest/delticket/:id", function (req, res) {
       let result = await collection.deleteOne(query);
       res.send(result).status(200);
     }
-  });
+  }
+
+  run().catch(console.log(error));
 });
 
 // A POST request
@@ -99,19 +101,21 @@ app.post("/rest/ticket/", function (req, res) {
   }
 
   //Adding new entry into database
-  router.post(async (Dreq, Dres) => {
+  async function run() {
     let collection = await client.db("cluster0").collection("SampleForProject");
     let newDocument = newTicket;
     newDocument.date = new Date();
     let result = await collection.insertOne(newDocument);
     res.send(result).status(204);
-  });
+  }
+
+  run().catch(console.log(error));
 });
 
 //Update request
-app.update("/rest/upticket/ticketUpdates/:id"),
+app.patch("/rest/upticket/:id"),
   function (req, res) {
-    router.patch(async (Dreq, Dres) => {
+    async function run() {
       const query = { _id: parseInt(req.params.id) };
       const updates = {
         $push: { ticketUpdates: req.body },
@@ -123,5 +127,7 @@ app.update("/rest/upticket/ticketUpdates/:id"),
       let result = await collection.updateOne(query, updates);
 
       res.send(result).status(200);
-    });
+    }
+
+    run().catch(console.log(error));
   };
