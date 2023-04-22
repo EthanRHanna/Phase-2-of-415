@@ -68,6 +68,7 @@ app.get("/rest/ticket/:id", function (req, res) {
 
 //A Delete request
 app.delete("/rest/delete/:id", function (req, res) {
+  console.log("Hi im delete");
   async function run() {
     const query = { _id: parseInt(req.params.id) };
 
