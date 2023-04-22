@@ -40,7 +40,7 @@ app.get("/rest/ticket/:id", function (req, res) {
 
   async function run() {
     let collection = await client.db("cluster0").collection("SampleForProject");
-    let query = { _id: parseInt(req.params.id) };
+    let query = { _id: parseInt(inputId) };
     let result = await collection.findOne(query);
 
     if (!result) res.send("Ticket Not found").status(404);
@@ -58,7 +58,7 @@ app.delete("/rest/delticket/:id", function (req, res) {
     let collection = await client.db("cluster0").collection("SampleForProject");
 
     if (!(await collection.findOne(query))) {
-      res.send(result).status(200);
+      res.send("There is no Ticket");
     } else {
       let result = await collection.deleteOne(query);
       res.send(result).status(200);
