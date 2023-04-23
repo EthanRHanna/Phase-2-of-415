@@ -56,7 +56,7 @@ app.get("/rest/ticket/:id", function (req, res) {
 
   async function run() {
     let collection = await client.db("cluster0").collection("SampleForProject");
-    let query = { _id: parseInt(inputId) };
+    let query = { _id: inputId };
     let result = await collection.findOne(query);
 
     if (!result) res.send("Ticket Not found").status(404);
