@@ -128,51 +128,18 @@ app.post("/rest/ticket/", function (req, res) {
 });
 
 //Update request
-app.patch("/rest/update/:id"),
-  function (req, res) {
-    const inputId = req.params.id;
-    console.log("Looking for: " + inputId);
+app.patch("/rest/patch/:id", function (req, res) {
+  const client = new MongoClient(uri);
 
-    const updatedTicket = req.body;
+  async function run() {
+    try {
+      const database = client.db("cluster0");
+      const ticket = database.collection("SampleForProject");
+      const searchId = req.params.id;
+      const query = { id: searchId };
 
-    //fields needed in the body
-    const ticketInfo = [
-      "id",
-      "created_at",
-      "updated_at",
-      "type",
-      "subject",
-      "description",
-      "priority",
-      "status",
-      "recipient",
-      "submitter",
-      "assignee_id",
-      "follower_ids",
-    ];
-
-    //checking how many fields are missing
-    const missingTicketInfo = ticketInfo.filter(
-      (field) => !(field in updatedTicket)
-    );
-
-    //if more than 0 are missing then throw an error
-    if (missingTicketInfo.length > 0) {
-      return res.status(400).json({
-        error: `Incomplete ticket info!\n Missing fields: ${missingTicketInfo.join(
-          ", "
-        )}`,
-      });
-    }
-
-    async function run() {
-      let newDocument = updatedTicket;
-      newDocument.date = new Date();
-
-      const query = { id: inputId };
-      const updates = {
+      var updateTicket = {
         $set: {
-          id: req.body.id,
           createdAt: req.body.createdAt,
           updatedAt: req.body.updatedAt,
           type: req.body.type,
@@ -187,14 +154,13 @@ app.patch("/rest/update/:id"),
           tags: req.body.tags,
         },
       };
-
-      let collection = await client
-        .db("cluster0")
-        .collection("SampleForProject");
-      await collection.updateOne(query, updates);
-      let result = await collection.findOne(query);
+      await ticket.updateOne(query, updateTicket);
+      let result = await ticket.findOne(query);
+      console.log(ticket);
       res.send(result).status(200);
+    } finally {
+      await client.close();
     }
-    run().catch(console.log(error));
-    res.write();
-  };
+  }
+  run().catch(console.dir);
+});
