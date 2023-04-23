@@ -50,13 +50,12 @@ app.get("/rest/list/", function (req, res) {
 
 //Get ticket by id
 app.get("/rest/ticket/:id", function (req, res) {
-  //JSON.parse treats id as a number thus we have to treat it as a number in input
   const inputId = req.params.id;
   console.log("Looking for: " + inputId);
 
   async function run() {
     let collection = await client.db("cluster0").collection("SampleForProject");
-    let query = { _id: inputId };
+    let query = { id: inputId };
     let result = await collection.findOne(query);
 
     if (!result) res.send("Ticket Not found").status(404);
