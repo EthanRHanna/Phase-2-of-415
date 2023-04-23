@@ -60,7 +60,8 @@ app.get("/rest/ticket/:id", function (req, res) {
     let result = await collection.findOne(query);
 
     if (!result) res.send("Ticket Not found").status(404);
-    else res.send(result).status(200);
+
+    res.send(result).status(200);
   }
 
   run().catch(console.log(error));
