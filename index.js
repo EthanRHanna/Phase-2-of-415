@@ -144,7 +144,7 @@ app.get("/updateForm/:id", function (req, res) {
 });
 
 //Update request
-app.patch("/updateForm/rest/update/"),
+app.patch("/rest/update/"),
   function (req, res) {
     const inputId = updateId;
     console.log("Looking for: " + inputId);
