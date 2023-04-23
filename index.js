@@ -69,7 +69,7 @@ app.get("/rest/ticket/:id", function (req, res) {
 //A Delete request
 app.get("/rest/delete/:id", function (req, res) {
   async function run() {
-    const query = { id: parseInt(req.params.id) };
+    const query = { id: req.params.id };
 
     let collection = await client.db("cluster0").collection("SampleForProject");
 
