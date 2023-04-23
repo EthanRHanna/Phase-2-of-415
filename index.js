@@ -67,7 +67,7 @@ app.get("/rest/ticket/:id", function (req, res) {
 });
 
 //A Delete request
-app.delete("/rest/delete/:id", function (req, res) {
+app.get("/rest/delete/:id", function (req, res) {
   async function run() {
     const query = { id: parseInt(req.params.id) };
 
@@ -144,7 +144,7 @@ app.get("/updateForm/:id", function (req, res) {
 });
 
 //Update request
-app.patch("/updateForm/rest/update/"),
+app.get("/updateForm/rest/update/"),
   function (req, res) {
     const inputId = updateId;
     console.log("Looking for: " + inputId);
