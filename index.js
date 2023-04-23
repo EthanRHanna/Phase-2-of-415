@@ -166,9 +166,12 @@ app.patch("/rest/update/:id"),
     }
 
     async function run() {
+      let newDocument = updatedTicket;
+      newDocument.date = new Date();
+
       const query = { id: inputId };
       const updates = {
-        $set: { updatedTicket },
+        $set: { newDocument },
       };
 
       let collection = await client
