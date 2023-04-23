@@ -68,9 +68,8 @@ app.get("/rest/ticket/:id", function (req, res) {
 
 //A Delete request
 app.delete("/rest/delete/:id", function (req, res) {
-  console.log("Hi im delete");
   async function run() {
-    const query = { _id: parseInt(req.params.id) };
+    const query = { id: parseInt(req.params.id) };
 
     let collection = await client.db("cluster0").collection("SampleForProject");
 
@@ -141,7 +140,7 @@ app.get("/updateForm/:id", function (req, res) {
         let collection = await client
           .db("cluster0")
           .collection("SampleForProject");
-        let query = { _id: parseInt(inputId) };
+        let query = { id: updateId };
         let result = await collection.findOne(query);
 
         if (!result) res.send("Ticket Not found").status(404);
@@ -153,19 +152,50 @@ app.get("/updateForm/:id", function (req, res) {
       console.log("Form loaded\n");
       res.write(contents + "<br>");
     }
+    res.end();
   });
 });
 
 //Update request
-app.patch("/rest/update/:id"),
+app.patch("/rest/update/"),
   function (req, res) {
     const inputId = updateId;
     console.log("Looking for: " + inputId);
 
     const updatedTicket = req.body;
 
+    //fields needed in the body
+    const ticketInfo = [
+      "id",
+      "created_at",
+      "updated_at",
+      "type",
+      "subject",
+      "description",
+      "priority",
+      "status",
+      "recipient",
+      "submitter",
+      "assignee_id",
+      "follower_ids",
+    ];
+
+    //checking how many fields are missing
+    const missingTicketInfo = ticketInfo.filter(
+      (field) => !(field in newTicket)
+    );
+
+    //if more than 0 are missing then throw an error
+    if (missingTicketInfo.length > 0) {
+      return res.status(400).json({
+        error: `Incomplete ticket info!\n Missing fields: ${missingTicketInfo.join(
+          ", "
+        )}`,
+      });
+    }
+
     async function run() {
-      const query = { _id: parseInt(inputId) };
+      const query = { id: inputId };
       const updates = {
         $push: { updatedTicket },
       };
@@ -177,8 +207,6 @@ app.patch("/rest/update/:id"),
 
       res.send(result).status(200);
     }
-
     run().catch(console.log(error));
+    res.write("The Ticket has been Updated");
   };
-
-app.patch("/rest/upticket/"), function (req, res) {};
