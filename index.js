@@ -51,7 +51,7 @@ app.get("/rest/list/", function (req, res) {
 //Get ticket by id
 app.get("/rest/ticket/:id", function (req, res) {
   //JSON.parse treats id as a number thus we have to treat it as a number in input
-  const inputId = Number(req.params.id);
+  const inputId = req.params.id;
   console.log("Looking for: " + inputId);
 
   async function run() {
