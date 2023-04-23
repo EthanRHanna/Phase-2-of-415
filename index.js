@@ -129,7 +129,6 @@ app.post("/rest/ticket/", function (req, res) {
 
 app.get("/updateForm/:id", function (req, res) {
   updateId = req.params.id;
-
   res.setHeader("Content-Type", "text/html");
   fs.readFile("./formFileUpdate.html", "utf8", (err, contents) => {
     if (err) {
