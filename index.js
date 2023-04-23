@@ -136,19 +136,6 @@ app.get("/updateForm/:id", function (req, res) {
       console.log("Form file Read Error", err);
       res.write("<p>Form file Read Error</p>");
     } else {
-      async function run() {
-        let collection = await client
-          .db("cluster0")
-          .collection("SampleForProject");
-        let query = { id: updateId };
-        let result = await collection.findOne(query);
-
-        if (!result) res.send("Ticket Not found").status(404);
-        else res.send(result).status(200);
-      }
-
-      run().catch(console.log(error));
-
       console.log("Form loaded\n");
       res.write(contents + "<br>");
     }
