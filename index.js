@@ -127,25 +127,10 @@ app.post("/rest/ticket/", function (req, res) {
   run().catch(console.log(error));
 });
 
-app.get("/updateForm/:id", function (req, res) {
-  updateId = req.params.id;
-  res.setHeader("Content-Type", "text/html");
-  fs.readFile("./formFileUpdate.html", "utf8", (err, contents) => {
-    if (err) {
-      console.log("Form file Read Error", err);
-      res.write("<p>Form file Read Error</p>");
-    } else {
-      console.log("Form loaded\n");
-      res.write(contents + "<br>");
-    }
-    res.end();
-  });
-});
-
 //Update request
-app.patch("/rest/update/"),
+app.patch("/rest/update/:id"),
   function (req, res) {
-    const inputId = updateId;
+    const inputId = req.params.id;
     console.log("Looking for: " + inputId);
 
     const updatedTicket = req.body;
@@ -168,7 +153,7 @@ app.patch("/rest/update/"),
 
     //checking how many fields are missing
     const missingTicketInfo = ticketInfo.filter(
-      (field) => !(field in newTicket)
+      (field) => !(field in updatedTicket)
     );
 
     //if more than 0 are missing then throw an error
@@ -183,16 +168,16 @@ app.patch("/rest/update/"),
     async function run() {
       const query = { id: inputId };
       const updates = {
-        $push: { updatedTicket },
+        $set: { updatedTicket },
       };
 
       let collection = await client
         .db("cluster0")
         .collection("SampleForProject");
-      let result = await collection.updateOne(query, updates);
-
+      await collection.updateOne(query, updates);
+      let result = await collection.findOne(query);
       res.send(result).status(200);
     }
     run().catch(console.log(error));
-    res.write("The Ticket has been Updated");
+    res.write();
   };
