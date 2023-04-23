@@ -128,7 +128,7 @@ app.post("/rest/ticket/", function (req, res) {
 });
 
 //Update request
-app.patch("/rest/update/:id"),
+app.get("/rest/update/:id"),
   function (req, res) {
     const inputId = req.params.id;
     console.log("Looking for: " + inputId);
